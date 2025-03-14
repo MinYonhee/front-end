@@ -24,8 +24,13 @@ const Dice = () => {
   } else if (newPlayerOne < newPlayerTwo) {
     setWinner("Joagador Número 2 é o VENCEDOR!!!");
     setScoreTwo = (scoreTwo + 1);
-
+  } else {
+    setWinner("Empate!!")
   }
+
+  setRound(round + 1);
+
+};
 
   return (
     <div style={{
