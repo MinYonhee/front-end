@@ -1,72 +1,125 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 
-const Dice = () => {
+const Dice = ({ roll }) => (
+  <img
+    src={roll === null ? "assets/image.png" : `assets/dice-${roll}.png` }
+    alt={roll === null ? "Logo do jogo" : `Dado ${roll}`}
+    width={100}
+    height={100}
+  />
+);
 
-  const [playerOne, setPlayerOne] = useState(1);
-  const [playerTwo, setPlayerTwo] = useState(1);
+const DiceGame = () => {
+  const [playerOneRoll, setPlayerOneRoll] = useState(null);
+  const [playerTwoRoll, setPlayerTwoRoll] = useState(null);
   const [scoreOne, setScoreOne] = useState(0);
   const [scoreTwo, setScoreTwo] = useState(0);
-  const [winner, setWinner] = useState("");
-  const [round, setRound] = useState(0);
+  const [round, setRound] = useState(1);
+  const [winner, setWinner] = useState(null);
 
-  const rollingDices = () => {
-    const newPlayerOne = Math.floor(Math.random() * 6) + 1;
-    const newPlayerTwo = Math.floor(Math.random() * 6) + 1;
-   
-    setPlayerOne(newPlayerOne);
-    setPlayerTwo(newPlayerTwo);
+  const rollDice = (player) => {
+    if (round > 5 || winner) return; 
+
+    const newRoll = Math.floor(Math.random() * 6) + 1;
+
+    if (player === 1) {
+      setPlayerOneRoll(newRoll);
+    } else if (player === 2) {
+      setPlayerTwoRoll(newRoll);
+      determineWinner(newRoll);
+    }
   };
 
-  if (newPlayerOne > newPlayerTwo) {
-    setWinner("Joagador Número 1 é o VENCEDOR!!!");
-    setScoreOne = (scoreOne + 1);
-  } else if (newPlayerOne < newPlayerTwo) {
-    setWinner("Joagador Número 2 é o VENCEDOR!!!");
-    setScoreTwo = (scoreTwo + 1);
-  } else {
-    setWinner("Empate!!")
-  }
+  const determineWinner = (playerTwoNewRoll) => {
+    setTimeout(() => {
+      let newScoreOne = scoreOne;
+      let newScoreTwo = scoreTwo;
 
-  setRound(round + 1);
+      if (playerOneRoll > playerTwoNewRoll) {
+        newScoreOne += 1;
+      } else if (playerOneRoll < playerTwoNewRoll) {
+        newScoreTwo += 1;
+      }
 
-};
+      setScoreOne(newScoreOne);
+      setScoreTwo(newScoreTwo);
+
+      if (round === 5) {
+        setTimeout(() => {
+          if (newScoreOne > newScoreTwo) {
+            setWinner("Jogador 1 ganhou!");
+          } else if (newScoreOne < newScoreTwo) {
+            setWinner("Jogador 2 ganhou!");
+          } else {
+            setWinner("Empate!");
+          }
+        }, 1000);
+      } else {
+        setRound((prevRound) => prevRound + 1);
+      }
+
+      setPlayerOneRoll(null);
+      setPlayerTwoRoll(null);
+    }, 1000);
+  };
+
+  const restartGame = () => {
+    setPlayerOneRoll(null);
+    setPlayerTwoRoll(null);
+    setScoreOne(0);
+    setScoreTwo(0);
+    setRound(1);
+    setWinner(null);
+  };
 
   return (
-    <div style={{
-      display: "flex", 
-      flexDirection: "column", 
-      alignItems: "center", 
-      justifyContent: "center", 
-      textAlign: "center", 
-      height: "100vh",
-      gap: "20px",
-    }}>
-      <h1>Go! Roll the Dice!</h1>
-      <img src={`assets/dice-${value}.png`} alt={`Dice ${value}`} width={200}/>
+    <div className="flex flex-col items-center justify-center h-screen text-center space-y-6">
+      <h1 className="text-2xl font-bold">Rodada {round} / 5</h1>
 
-    <br/>
+      <div className="flex space-x-12">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Jogador 1</h2>
+          <Dice roll={playerOneRoll} />
+          <button 
+            className="bg-purple-500 text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-50"
+            onClick={() => rollDice(1)} 
+            disabled={playerOneRoll !== null || round > 5 || winner}
+          >
+            Rolar Dado
+          </button>
+        </div>
 
-    <button onClick={rollingDices} style={{
-      marginTop:"0px",
-      padding: "10px 10px",
-      fontSize: "16px",
-      cursor: "pointer",
-      border: "none",
-      backgroundColor: "#007bff",
-      color: "white",
-      borderRadius: "5px",
-      display: "flex",
-      alignItems: "center",
-      adding: "12px 24px",
-      boxShadow: "2px 2px 10px rgba(0,0,0,0.2)",
-      transition: "0.3s"
+        <div className="border-l border-gray-400 h-24"></div>
 
-    }}>
-      Roll the Dice!
-    </button>
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Jogador 2</h2>
+          <Dice roll={playerTwoRoll} />
+          <button 
+            className="bg-purple-500 text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-50"
+            onClick={() => rollDice(2)} 
+            disabled={playerOneRoll === null || playerTwoRoll !== null || round > 5 || winner}
+          >
+            Rolar Dado
+          </button>
+        </div>
+      </div>
 
+      <h2 className="text-xl font-semibold">Placar: {scoreOne} x {scoreTwo}</h2>
+
+      {winner && (
+        <div className="mt-4">
+          <h2 className="text-2xl font-bold">{winner}</h2>
+          <button 
+            className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-md mt-4"
+            onClick={restartGame}
+          >
+            Jogar Novamente
+          </button>
+        </div>
+      )}
     </div>
-)};
+  );
+}
 
-  export default Dice;
+export default DiceGame;
