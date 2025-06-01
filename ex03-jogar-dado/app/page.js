@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
+import "./globals.css";
 
 export default function JogoDados() {
   const rodadaRef = useRef(1);
@@ -72,92 +73,35 @@ export default function JogoDados() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#ffffff",
-        fontFamily: "sans-serif",
-        textAlign: "center",
-        padding: "20px",
-      }}
-    >
-      {!mostrarResultado && (
-        <h1 style={{ fontWeight: "bold" }}>Rodada {rodadaRef.current} / 5</h1>
-      )}
+    <div className="container">
+      {!mostrarResultado && <h1 className="rodada">Rodada {rodadaRef.current} / 5</h1>}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "60px",
-          marginTop: "30px",
-        }}
-      >
+      <div className="gameBoard">
         {[0, 1].map((jogador, index) => (
           <React.Fragment key={jogador}>
-            <div style={{ textAlign: "center" }}>
+            <div className="player">
               <h2>Jogador {jogador + 1}</h2>
-              <img
-                src={dados[jogador]}
-                alt={`Dado ${jogador + 1}`}
-                width="80"
-              />
-              <br />
+              <img src={dados[jogador]} alt={`Dado ${jogador + 1}`} className="dice" />
               <button
                 onClick={() => rolarDado(jogador)}
                 disabled={jogador !== jogadorAtivo || mostrarResultado}
-                style={{
-                  marginTop: "10px",
-                  padding: "10px 20px",
-                  backgroundColor: "#bb6ef5",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  opacity: jogador !== jogadorAtivo || mostrarResultado ? 0.5 : 1,
-                }}
+                className="playButton"
               >
                 Rolar Dado
               </button>
             </div>
 
-            {index === 0 && (
-              <div
-                style={{
-                  width: "1px",
-                  height: "120px",
-                  backgroundColor: "#ccc",
-                }}
-              />
-            )}
+            {index === 0 && <div className="divider" />}
           </React.Fragment>
         ))}
       </div>
 
-      {/* Placar sempre visível */}
-      <h2 style={{ marginTop: "30px" }}>
-        Placar: {vitoriasRef.current[0]} x {vitoriasRef.current[1]}
-      </h2>
+      <h2 className="score">Placar: {vitoriasRef.current[0]} x {vitoriasRef.current[1]}</h2>
 
-      {/* Resultado final e botão de reinício */}
       {mostrarResultado && (
-        <div style={{ marginTop: "20px" }}>
-          <h2 style={{ color: "black" }}>{vencedorFinal}</h2>
-          <button
-            onClick={reiniciarJogo}
-            style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              backgroundColor: "#1f8f3a",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-            }}
-          >
+        <div className="resultado">
+          <h2 className="gameResult">{vencedorFinal}</h2>
+          <button onClick={reiniciarJogo} className="resetButton">
             Jogar Novamente
           </button>
         </div>
